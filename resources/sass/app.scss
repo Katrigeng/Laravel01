@@ -51,7 +51,16 @@ section.user_info {
 }
 
 .gravatar {
-  float: left;
-  max-width: 50px;
+  max-width: 100px;
   border-radius: 50%;
 }
+
+.gravatar_edit{
+  text-align: center;
+  margin: 15px auto;
+  .gravatar {
+    max-width: 150px;
+    border-radius: 50%;
+  }
+}
+
