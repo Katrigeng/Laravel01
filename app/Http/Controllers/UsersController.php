@@ -12,7 +12,7 @@ class UsersController extends Controller
     public function __construct()
     {
         $this->middleware('auth', [
-            'except' => ['show', 'create', 'store']
+            'except' => ['show', 'create', 'store', 'index']
         ]);
 
         $this->middleware('guest', [
@@ -20,11 +20,19 @@ class UsersController extends Controller
         ]);
     }
 
+    public function index()
+    {
+        $users = User::paginate(6);
+        return view('users.index', compact('users'));
+    }
+
     public function create(){
         return view('users.create');
     }
 
     public function show(User $user){
+        // $this->authorize('update', $user);
+
         return view('users.show', compact('user'));
     }
 
