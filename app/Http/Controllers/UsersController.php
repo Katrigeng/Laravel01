@@ -5,14 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use PDO;
+use Mail;
 
 class UsersController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth', [
-            'except' => ['show', 'create', 'store', 'index']
+            'except' => ['show', 'create', 'store', 'index', 'confirmEmail']
         ]);
 
         $this->middleware('guest', [
@@ -42,16 +42,18 @@ class UsersController extends Controller
             'email' => 'required|email|unique:users|max:255',
             'password' => 'required|confirmed|min:6',
         ]);
-
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password)
         ]);
+        // Auth::login($user);
 
-        Auth::login($user);
-        session()->flash('success', '欢迎，您将在这里开启一段新的旅程~');
-        return redirect()->route('users.show', $user);
+        //发送邮件
+        $this->sendMailConfirmation($user);
+
+        session()->flash('success', '验证邮件已发送到你的注册邮箱上，请注意查收。');
+        return redirect('/');
     }
 
     public function edit(User $user){
@@ -86,5 +88,32 @@ class UsersController extends Controller
         session()->flash('success', '成功删除用户！');
         //back 函数生成一个 重定向 HTTP 响应 到用户之前的位置
         return back();
+    }
+
+    protected function sendMailConfirmation ($user)
+    {
+        $view = 'emails.confirm';
+        $data = compact('user');
+        $from = 'linjiageng@example.com';
+        $name = 'linjiageng';
+        $to = $user->email;
+        $subject = '感谢注册 Weibo 应用！请确认你的邮箱。';   //主题
+        Mail::send($view, $data, function ($message) use ($from, $name, $to, $subject) {
+            $message->from($from, $name)->to($to)->subject($subject);
+        });
+    }
+
+    public function confirmEmail($token)
+    {
+        //findOrFail 和 firstOrFail 方法会检索查询的第一个结果，如果未找到，将抛出 Illuminate\Database\Eloquent\ModelNotFoundException 异常
+        $user = User::where('activation_token', $token)->firstOrFail();
+        $user->activated = true;
+        $user->activation_token = null;
+        $user->save();
+
+        Auth::login($user);
+        session()->flash('success', '恭喜你，激活成功！');
+
+        return redirect()->route('users.show', [$user]);
     }
 }
