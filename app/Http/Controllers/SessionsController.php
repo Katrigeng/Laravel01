@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class SessionsController extends Controller
 {
@@ -11,6 +13,11 @@ class SessionsController extends Controller
     {
         $this->middleware('guest', [
             'only' => ['create']
+        ]);
+
+        //登录限流 10分钟10次
+        $this->middleware('throttle:10,10',[
+            'only' => ['store']
         ]);
     }
 

@@ -12,6 +12,11 @@ use Mail;
 
 class PasswordController extends Controller
 {
+    public function __construct(){
+        $this->middleware('throttle:3,10',[
+            'only' => ['sendResetLinkEmail']
+        ]);
+    }
 
     //忘记密码表单
     public function showRequestForm()
