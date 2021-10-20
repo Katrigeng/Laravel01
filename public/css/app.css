@@ -10060,3 +10060,25 @@ section.user_info h1 {
   max-width: 150px;
   border-radius: 50%;
 }
+
+.stats {
+  overflow: auto;
+  margin-top: 0;
+  padding: 0;
+}
+.stats a {
+  padding: 0 10px;
+  float: left;
+  border-left: 1px solid #eee;
+  color: #33383c;
+  width: 33%;
+  text-align: center;
+}
+.stats a:first-child {
+  padding-left: 0;
+  border: 0;
+}
+.stats strong {
+  display: block;
+  color: black;
+}
