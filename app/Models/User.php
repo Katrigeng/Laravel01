@@ -96,7 +96,8 @@ class User extends Authenticatable
 
     //当前用户 是否关注 某某用户
     public function isFollowing($user_ids){
-        return $this->followings()->contains($user_ids);
+        //这里注意 不能写成 $this->followings()->contains($user_ids),不能加多个括号
+        return $this->followings->contains($user_ids);
     }
 
 }

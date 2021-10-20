@@ -29,4 +29,9 @@ class UserPolicy
     public function destroy(User $curentUser, User $user){
         return $curentUser->id !== $user->id && $curentUser->is_admin;
     }
+
+    //关注的时候不能关注自己
+    public function follow(User $curentUser, User $user){
+        return $curentUser->id !== $user->id;
+    }
 }
